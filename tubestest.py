@@ -27,7 +27,10 @@ def tcp_server():
 def handle_request():
     response_line = "HTTP/1.1 200 OK\r\n"
     content_type = "Content-Type: text/html\r\n\r\n"
-    message_body = "<html><body><h1>Hello</h1></body></html>"
+    
+    file = open("html_docs", 'r')
+    message_body = file.read()
+    file.close()
     
     response = response_line+content_type+message_body
     return response
