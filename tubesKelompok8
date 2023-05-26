@@ -1,0 +1,24 @@
+from http.server import BaseHTTPRequestHandler #Mengimport BaseHTTP dari http.server
+import http.server #mengimport http.server yang berisi implementasi HTTP di pythonn]
+import socketserver #mengimport socketserver yang menyediakan infrastruktur untuk server socket
+
+PORT = 8000 #inisiasi port
+
+class Serv(BaseHTTPRequestHandler): #menangani perintah masuk
+    def do_GET(self): #mendefinisan do_Get
+        if self.path == '/': #Memeriksa apakah request path adalah root path. Jika iya, maka path akan diubah menjadi '/doc'.
+            self.path = '/doc'
+        try: #mencoba membuka file
+            f = open(self.path[1:]).read() #membuka file yg sesuai dengan path dan membacanya
+            self.send_response(200) #apabila terbaca maka akan mengirimkan response 200 ke client
+            self.end_headers() #mengakhiri headers
+            self.wfile.write(bytes(f, 'utf-8')) #mengirimkan isi file sebagai response body ke client
+        except: #membaca exception apabila terjadi kesalahan
+            f = "<h1>404 Not Found</h1><p>The requested file was no found on this server.<p>" #set pesan error dalam format HTML
+            self.send_response(404) #abila pesan error maka akan mengirimkan status 404 kepada client
+        self.end_headers() #mengakhiri headers
+        self.wfile.write(bytes(f, 'utf-8')) #mengirikmkan pesan error sebagai response body ke client
+        
+with socketserver.TCPServer(("", PORT), Serv) as httpd: #membuat instanceTCPSERVER 
+    print(f"Ready {PORT}") #menampilkan message bahwa PORT siap dipakai pada port yang sudah di tentukan
+    httpd.serve_forever() #memulai server agar dapat menerima permintaan secara terus menerus
